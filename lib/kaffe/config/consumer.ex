@@ -71,6 +71,7 @@ defmodule Kaffe.Config.Consumer do
   def client_consumer_config do
     default_client_consumer_config()
     ++ maybe_heroku_kafka_ssl()
+    ++ maybe_kafka_ssl()
   end
 
   def default_client_consumer_config do
@@ -99,6 +100,13 @@ defmodule Kaffe.Config.Consumer do
   def maybe_heroku_kafka_ssl do
     case heroku_kafka?() do
       true -> Kaffe.Config.ssl_config()
+      false -> []
+    end
+  end
+
+  def maybe_kafka_ssl do
+    case config_get(:ssl, false) do
+      [cert: _cert, key: _key] -> [ssl: config_get!(:ssl)]
       false -> []
     end
   end
